@@ -1,0 +1,250 @@
+
+--------------------------------------------------
+
+
+C运行时库中的 crtdll.c 声明了两个外部内容，可由外部提供。
+extern BOOL (WINAPI * const _pRawDllMain)(HANDLE, DWORD, LPVOID);      （如果外部没有提供，则 _pRawDllMain 默认会为 NULL ）
+extern BOOL WINAPI DllMain(
+        HANDLE  hDllHandle,
+        DWORD   dwReason,
+        LPVOID  lpreserved
+        ) ;                                        （如果是动态库程序，则外部必须提供 ）    （非必须吧？有默认行为吧）
+
+
+_DllMainCRTStartup [crtdll.c]
+  ~ __DllMainCRTStartup [crtdll.c]
+      ~ RawDllMain [dllinit.cpp]
+	  ~ _CRT_INIT  构建DLL中的全局、静态变量    DLL ？  mfc100ud.dll
+	  ~ DllMain
+
+
+RawDllMain
+AfxTlsAddRef [afxtls_.h] [afxtls.cpp]
+AfxCriticalInit [afximpl.h] [afxcrit.cpp]
+AfxCriticalTerm [afximpl.h] [afxcrit.cpp]
+AfxTlsRelease [afxtls_.h] [afxtls.cpp]
+
+
+DLL_PROCESS_ATTACH / DLL_PROCESS_DETACH
+AfxTlsAddRef / AfxTlsRelease    维护一个引用计数。 主要点是 当引用计数为零时，释放一个存储资源(CThreadSlotData* _afxThreadData;)
+AfxCriticalInit / AfxCriticalTerm    维护一个临界区资源集合。初始化(InitializeCriticalSection _afxLockInitLock)和释放(DeleteCriticalSection _afxLockInitLock _afxResourceLock[CRIT_MAX])
+
+
+_CRT_INIT    构造、创建全局变量
+
+/*
+* Invoke C++ constructors
+*/
+_initterm
+IMPLEMENT_SERIAL
+struct AFX_CLASSINIT  (构造函数 AFX_CLASSINIT(CRuntimeClass* pNewClass) { AfxClassInit(pNewClass); } )
+AfxClassInit
+AfxGetModuleState
+_AFX_THREAD_STATE       (EXTERN_THREAD_LOCAL(_AFX_THREAD_STATE, _afxThreadState))        (CThreadLocal<class_name>)
+...
+CThreadLocalObject
+...
+CThreadSlotData        (CThreadSlotData* _afxThreadData;)
+...
+...
+其他很多 IMPLEMENT_SERIAL
+...
+...
+
+
+DllMain
+AfxInitExtensionModule
+CDynLinkLibrary
+AfxLoadLangResourceDLL
+AfxTermThread
+FreeLibrary
+CDynLinkLibrary
+AfxTermExtensionModule
+AfxTermLocalData
+
+DLL_PROCESS_ATTACH / DLL_THREAD_DETACH / DLL_PROCESS_DETACH
+AfxInitExtensionModule / / AfxTermExtensionModule
+CDynLinkLibrary / / CDynLinkLibrary
+AfxLoadLangResourceDLL / / FreeLibrary
+ / / AfxTermLocalData
+ / AfxTermThread /
+
+
+
+
+--------------------------------------------------
+MFC 的全局临界区资源集 afxcrit.cpp
+
+AfxCriticalInit 、 AfxCriticalTerm [afximpl.h] [afxcrit.cpp]
+
+// these globals are protected by the same critical section
+#define CRIT_DYNLINKLIST    0
+#define CRIT_RUNTIMECLASSLIST   0
+#define CRIT_OBJECTFACTORYLIST  0
+#define CRIT_LOCKSHARED 0
+// these globals are not protected by independent critical sections
+#define CRIT_REGCLASSLIST   1
+#define CRIT_WAITCURSOR     2
+#define CRIT_DROPSOURCE     3
+#define CRIT_DROPTARGET     4
+#define CRIT_RECTTRACKER    5
+#define CRIT_EDITVIEW       6
+#define CRIT_WINMSGCACHE    7
+#define CRIT_HALFTONEBRUSH  8
+#define CRIT_SPLITTERWND    9
+#define CRIT_MINIFRAMEWND   10
+#define CRIT_CTLLOCKLIST    11
+#define CRIT_DYNDLLLOAD     12
+#define CRIT_TYPELIBCACHE   13
+#define CRIT_STOCKMASK      14
+#define CRIT_ODBC           15
+#define CRIT_PROCESSLOCAL   16
+#define CRIT_MAX    17  // Note: above plus one!
+
+AFX_STATIC_DATA BOOL _afxCriticalInit = 0;   // set _afxGlobalLock, _afxTempLock init
+AFX_STATIC_DATA CRITICAL_SECTION _afxLockInitLock = { 0 };
+
+// _afxResourceLock and _afxLockInit are used to lock each MFC global resource
+AFX_STATIC_DATA BOOL _afxLockInit[CRIT_MAX] = { 0 };
+AFX_STATIC_DATA CRITICAL_SECTION _afxResourceLock[CRIT_MAX] = { { 0 } };
+#ifdef _DEBUG
+AFX_STATIC_DATA BOOL _afxResourceLocked[CRIT_MAX] = { 0 };
+#endif
+
+
+一个临界区资源与一个开关标识配合使用
+AfxCriticalInit 时，仅标记 _afxCriticalInit 及 _afxLockInitLock 初始化。
+AfxCriticalTerm 时，根据开关标识 释放临界区资源集中处于 开状态 中的临界区资源。（调试版本中 CRIT_MAX 集中的临界区资源，还多一个是否在 使用中(_afxResourceLocked) 的状态标识。）
+
+
+AfxLockGlobals 、 AfxUnlockGlobals [afximpl.h] [afxcrit.cpp]
+
+AfxLockGlobals
+如果指定的某个（某种）临界区资源 _afxLockInit[i] 未初始化，则初始化该（该种）临界区资源 _afxResourceLock[i] ，置标识 _afxLockInit[i] 为已经初始化）。   （_afxLockInitLock 是专用于保护各个 _afxResourceLock (CRIT_MAX个) 初始化的 临界区资源。）
+如果已经初始化（或者初始化完成），则进行入该临界区 _afxResourceLock[i] 。
+调试版本中还置状态标识 _afxResourceLocked[i] 为使用中。
+
+AfxUnlockGlobals
+调试版本中置状态标识 _afxResourceLocked[i] 为未使用中。
+退出该临界区 _afxResourceLock[i]。
+
+
+多线程情况下才会用到互斥、同步等机制。
+
+
+
+--------------------------------------------------
+CThreadSlotData 根     (afxtls_.h 未引用其它头文件)
+
+
+CSlotData* m_pSlotData; 
+视为数组 可标识slot状态 
+
+
+DWORD m_tlsIndex;   （CThreadData*））
+线程本地存储索引，关联到一个存储空间对象，其关联一个内存区块（视作数组，并且与m_pSlotData的标识状态有关联），用于存储资源指针（void*）
+
+
+int CThreadSlotData::AllocSlot()
+动态分配一块内存 （视作数组） （未初始化） （默认首次32个）
+置零
+循环递增取余下的空元素使用 （置标识位为1）
+取完（全满），重新分配一块更大的内存 （包含之前的内容，不变） （32个元素递增） 
+递增的部分，置零
+循环递增取余下的空元素使用 （置标识位为1）
+（全满）......
+
+
+void CThreadSlotData::SetValue(int nSlot, void* pValue)
+根据 线程本地存储索引，获取 存储空间对象 （m_tlsIndex、CThreadData*）
+存储空间对象 不存在，分配存储空间对象 （new CThreadData;） （重载new 0初始化分配空间）
+存储空间对象 合入链表中 （m_list.AddHead(pData);、CThreadData*）        （从分析代码来看基本最终生成都是只有单个结点）
+（递增）分配内存区块 （视作数组）（LocalAlloc、LocalReAlloc） （测试来看基本上每次都要重新递增分配）
+存储空间对象 关联 内存区块
+（递增）内存区块 置零
+存储空间对象 更新到最新的 空间大小 (刚好是最新的nSlot+1个)
+存储空间对象 存储到 线程本地存储索引 的位置 （m_tlsIndex、CThreadData*）
+存储空间对象 的 内存区块 中取指定 的元素空间 存储 资源 （nSlot, pValue）
+
+
+inline void* CThreadSlotData::GetThreadValue(int nSlot)
+根据 线程本地存储索引，获取 存储空间对象 （m_tlsIndex、CThreadData*）
+从 存储空间对象 关联的 内存区块 的指定位置 取出数据 （nSlot, void*）
+
+
+CThreadSlotData* _afxThreadData;  就是 CThreadLocalObject 操作的 slot 存储区
+
+
+进行全局性的存储  （全局对象, new replacement 表达式创建， 有构造函数）
+
+CThreadSlotData* _afxThreadData;    （是DLL内部的全局变量）
+BYTE __afxThreadData[sizeof(CThreadSlotData)];
+_afxThreadData = new(__afxThreadData) CThreadSlotData; 
+
+
+未完待继
+
+
+--------------------------------------------------
+AfxClassInit
+  ~ AfxGetModuleState -> AFX_MODULE_STATE -> CTypedSimpleList<CRuntimeClass*> m_classList;
+  ~ CTypedSimpleList<>::AddHead(TYPE p)
+
+
+AfxGetModuleState [afxstat_.h] [afxstate.cpp] -> AFX_MODULE_STATE
+  ~ CThreadLocal<_AFX_THREAD_STATE> _afxThreadState [afxstate.cpp] -> _AFX_THREAD_STATE -> AFX_MODULE_STATE* m_pModuleState;
+  ~ CProcessLocal<_AFX_BASE_MODULE_STATE> _afxBaseModuleState; [afxstate.cpp] -> _AFX_BASE_MODULE_STATE : public AFX_MODULE_STATE
+
+
+AfxGetThreadState -> _AFX_THREAD_STATE
+  ~ CThreadLocal<_AFX_THREAD_STATE> _afxThreadState [afxstate.cpp] -> _AFX_THREAD_STATE 
+
+
+
+--------------------------------------------------
+_AfxGetOleModuleState -> AFX_MODULE_STATE
+  ~ AFX_MODULE_STATE _afxOleModuleState(TRUE, &AfxWndProcDllOle, _MFC_VER, TRUE);
+
+
+
+--------------------------------------------------
+AFX_MODULE_STATE
+
+
+static AFX_MODULE_STATE _afxOleModuleState(TRUE, &AfxWndProcDllOle, _MFC_VER, TRUE);
+
+cpp 中定义 static 存储类型的数据，仅能在 CPP 文件内使用 。 记得是这样的 ！？
+
+调测探究 全局性变量 分配、执行是两个阶段。 （可能所有变量都是类似吧，方便提供程序员各阶段的操作机会 ！？）
+1.全局变量 分配 变量（对象）存储空间。此时至少应该可获取变量的地址信息（指针）了。
+2.RawDllMain
+3.全局变量进行构造。（初始化，即如果是类则调用初始化函数）
+4.DllMain
+...进入后续使用中
+
+
+/*
+* Invoke C++ constructors
+*/
+_initterm
+
+
+
+--------------------------------------------------
+CNoTrackObject = AFX_MODULE_STATE = _AFX_BASE_MODULE_STATE
+               = AFX_MODULE_THREAD_STATE
+               = _AFX_THREAD_STATE
+
+
+CThreadLocalObject = CThreadLocal<TYPE>
+相关操作获得 TYPE, CThreadLocalObject 操作方法获得 CNoTrackObject
+CThreadLocal<TYPE> 与 CThreadLocalObject 的继承关系，是否就限定了 TYPE 只能是 CNoTrackObject 的子类
+
+
+CNoTrackObject 
+主要仅是重载实现  new/delete 操作符 （零值初始化） 【调试版本 并未增加有什么实质性的内容】
+虚析构 基类
+
+CNoTrackObject 
+Designed for use by the MFC framework, classes derived from the CNoTrackObject class are exempt from memory leak detection. 
+免于内存泄漏检查
