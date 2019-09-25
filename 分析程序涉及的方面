@@ -1,0 +1,153 @@
+
+--------------------------------------------------
+IXMLDOMDocument
+
+读写XML文件内容。
+
+XML Parser 
+XML 解析器 
+把 XML 内容（文档/字符串）转换为 XML DOM 对象
+
+百度百科：XML解析器
+
+XML文档也是数据的一种，对数据的操作也不外乎是“增删改查”，也被大家称之为“CRUD”。
+C：Create；
+R：Retrieve；
+U：Update；
+D：Delete
+
+XML解析方式分为两种：DOM（Document Object Model）和SAX（Simple API for XML）。
+DOM、SAX都是一组解析XML文档的规范，其实就是接口，而解析器就是对DOM、SAX的实现。一般解析器都会实现DOM、SAX两个规范。
+DOM是W3C组织提供的解析XML文档的标准接口，而SAX是社区讨论的产物，是一种事实上的标准。
+DOM和SAX只是定义了一些接口，以及某些接口的缺省实现，而这个缺省实现只是用空方法来实现接口。
+一个应用程序如果需要DOM或SAX来访问XML文档，还需要一个实现了DOM或SAX的解析器，也就是说这个解析器需要实现DOM或SAX中定义的接口。提供DOM或SAX中定义的功能。
+
+解析原理
+DOM
+使用DOM要求解析器把整个XML文档装载到一个Document对象中。Document对象包含文档元素，即根元素，根元素包含N个子元素。
+一个XML文档解析后对应一个Document对象，这说明使用DOM解析XML文档方便使用，因为元素与元素之间还保存着结构关系。
+优先：使用DOM，XML文档的结构在内存中依然清晰。
+缺点：如果XML文档过大，那么把整个XML文档装载进内存，可能会出现内存溢出的现象。
+
+SAX
+SAX一行一行的读取XML文档，但是当XML文档读取结束后，SAX不会保存任何数据，同时整个解析XML文档的工作也就结束了。（DOM也会一行一行的读取XML文档，但最终会把XML文档所有数据存放到Document对象中。）
+SAX在读取一行XML文档数据后，就会给感兴趣的用户一个通知。例如当SAX读取到一个元素的开始时，会通知用户当前解析到一个元素的开始标签。而用户可以在整个解析的过程中完成自己的业务逻辑，当SAX解析结束，不会保存任何XML文档的数据。
+优先：使用SAX，不会占用大量内存来保存XML文档数据，效率高。
+缺点：当解析到一个元素时，上一个元素的信息已经丢弃，也就是说没有保存元素与元素之间的结构关系，这也大大限制了SAX的使用范围。如果只是想查询XML文档中的数据，那么使用SAX是最佳选择。
+
+
+
+MSXML
+msxml指微软的xml语言解析器，用来解释xml语言的     (ibm,sun都有自己的xml parser)
+
+
+Win32 and COM Development
+Data Access and Storage
+MSXML
+DOM 
+DOM Reference 
+XML DOM Objects/Interfaces  
+IXMLDOMDocument/DOMDocument 
+
+
+
+--------------------------------------------------
+GetAdaptersInfo
+
+Win32 and COM Development
+Networking
+Network Protocols
+IP Helper
+IP Helper Reference
+IP Helper Functions
+GetAdaptersInfo
+
+Internet Protocol Helper (IP Helper) 
+
+
+
+--------------------------------------------------
+cl
+
+Compiling a C/C++ Program 
+
+
+
+#pragma message
+
+
+
+示例测试：
+
+//#include <iostream>
+
+
+////两个用于测试的宏
+//#define PI 3.1415926
+//#define MAX(a,b) (a)>(b) ? (a) :(b)
+//
+////首先定义两个辅助宏
+//#define   PRINT_MACRO_HELPER(x)   #x 
+//#define   PRINT_MACRO(x)   #x"="PRINT_MACRO_HELPER(x) 
+//
+////编译阶段打印宏内容
+//#pragma message(PRINT_MACRO(PI))
+//#pragma message(PRINT_MACRO(PI2))
+//#pragma message(PRINT_MACRO(MAX(a,b)))
+//#pragma message(PRINT_MACRO(MAX(x,y)))
+
+/*
+Sends a string literal to the standard output without terminating the compilation. 
+#pragma message( messagestring )
+
+The messagestring parameter can be a macro that expands to a string literal, and you can concatenate such macros with string literals in any combination. 
+
+If you use a predefined macro in the message pragma, the macro should return a string, else you will have to convert the output of the macro to a string. 
+
+简单的说，就是 messagestring 必须是使用引号 "" 引起来的字符串。
+在输出时，引号 "" 不会输出。
+*/
+
+#define MY_MACRO_TEST "my macro test"
+#pragma message(MY_MACRO_TEST)      // #pragma message("my macro test")
+
+
+#define MY_PI 3.1415926
+#define MY_MAX(a,b) (a)>(b) ? (a) :(b)
+//#pragma message(MY_PI)
+//#pragma message(MY_MAX)
+//
+//#pragma message(MY_MAX(a,b))
+//#pragma message(MY_MAX(x,y))
+
+
+//#define MY_PRINT_MACRO(x)   #x=x
+//#pragma message(MY_PRINT_MACRO(MY_MACRO_TEST))
+//#pragma message(MY_PRINT_MACRO(MY_PI))
+//#pragma message(MY_PRINT_MACRO(MY_MAX(a,b)))
+
+
+#define MY_PRINT_MACRO_HELPER(x)   #x                          // "x"
+#define MY_PRINT_MACRO(x)   #x"="MY_PRINT_MACRO_HELPER(x)      // "x""="MY_PRINT_MACRO_HELPER(abc) --> "x""=""abc"
+
+#pragma message(MY_PRINT_MACRO_HELPER(MY_MACRO_TEST))          // #pragma message("MY_MACRO_TEST") 
+#pragma message(MY_PRINT_MACRO_HELPER(MY_PI))                  // #pragma message("MY_PI") 
+#pragma message(MY_PRINT_MACRO_HELPER(MY_MAX(a,b)))            // #pragma message("MY_MAX(a,b)") 
+
+#pragma message(MY_PRINT_MACRO(MY_MACRO_TEST))                 // #pragma message("MY_MACRO_TEST""=""\"my macro test\"")
+#pragma message(MY_PRINT_MACRO(MY_PI))                         // #pragma message("MY_PI""=""3.1415926")
+#pragma message(MY_PRINT_MACRO(MY_MAX(a,b)))                   // #pragma message("MY_MAX(a,b)""=""(a)>(b) ? (a) :(b)")
+
+
+#define MY_ERROR_PRINT_MACRO(x)   #x"="x
+#pragma message(MY_ERROR_PRINT_MACRO(MY_MACRO_TEST))           // #pragma message("MY_MACRO_TEST""=""my macro test") 
+#pragma message(MY_ERROR_PRINT_MACRO(MY_PI))                   // #pragma message("MY_PI""="3.1415926)                    // warning C4081: 应输入“)”；找到“常量”
+#pragma message(MY_ERROR_PRINT_MACRO(MY_MAX(a,b)))             // #pragma message("MY_MAX(a,b)""="(a)>(b) ? (a) :(b))     // warning C4081: 应输入“)”；找到“(”    
+
+
+
+int main()
+{
+    //std::cout << "This is a native C++ program." << std::endl;
+    return 0;
+}
