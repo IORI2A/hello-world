@@ -7,6 +7,8 @@
 #include "GameAssistDlg.h"
 #include "afxdialogex.h"
 
+#include "AssistSrc/include/Tool.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -71,6 +73,9 @@ END_MESSAGE_MAP()
 
 BOOL CGameAssistDlg::OnInitDialog()
 {
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("创建对话框！");
+
 	CDialogEx::OnInitDialog();
 
 	// 将“关于...”菜单项添加到系统菜单中。
