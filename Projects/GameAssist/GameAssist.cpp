@@ -70,24 +70,46 @@ BOOL CGameAssistApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
-	CGameAssistDlg dlg;
-	m_pMainWnd = &dlg;
-	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-		// TODO: 在此放置处理何时用
-		//  “确定”来关闭对话框的代码
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: 在此放置处理何时用
-		//  “取消”来关闭对话框的代码
-	}
-	else if (nResponse == -1)
-	{
-		TRACE(traceAppMsg, 0, "警告: 对话框创建失败，应用程序将意外终止。\n");
-		TRACE(traceAppMsg, 0, "警告: 如果您在对话框上使用 MFC 控件，则无法 #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS。\n");
-	}
+//	CGameAssistDlg dlg;
+//	m_pMainWnd = &dlg;
+//	INT_PTR nResponse = dlg.DoModal();
+//	if (nResponse == IDOK)
+//	{
+//		// TODO: 在此放置处理何时用
+//		//  “确定”来关闭对话框的代码
+//	}
+//	else if (nResponse == IDCANCEL)
+//	{
+//		// TODO: 在此放置处理何时用
+//		//  “取消”来关闭对话框的代码
+//	}
+//	else if (nResponse == -1)
+//	{
+//		TRACE(traceAppMsg, 0, "警告: 对话框创建失败，应用程序将意外终止。\n");
+//		TRACE(traceAppMsg, 0, "警告: 如果您在对话框上使用 MFC 控件，则无法 #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS。\n");
+//	}
+//
+//	// 删除上面创建的 shell 管理器。
+//	if (pShellManager != nullptr)
+//	{
+//		delete pShellManager;
+//	}
+//
+//#if !defined(_AFXDLL) && !defined(_AFX_NO_MFC_CONTROLS_IN_DIALOGS)
+//	ControlBarCleanUp();
+//#endif
+//
+//	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
+//	//  而不是启动应用程序的消息泵。
+//	return FALSE;
+
+	// 实现程序启动隐藏。
+	// 创建非模态对话框，可自由控制显示、隐藏。
+	CGameAssistDlg *pDlg = new CGameAssistDlg;
+	m_pMainWnd = pDlg;
+	pDlg->Create(IDD_GAMEASSIST_DIALOG, NULL);
+	pDlg->ShowWindow(SW_SHOW);
+
 
 	// 删除上面创建的 shell 管理器。
 	if (pShellManager != nullptr)
@@ -99,8 +121,7 @@ BOOL CGameAssistApp::InitInstance()
 	ControlBarCleanUp();
 #endif
 
-	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
-	//  而不是启动应用程序的消息泵。
-	return FALSE;
+	// 返回 TRUE ，以进入程序的消息循环。
+	return TRUE;
 }
 

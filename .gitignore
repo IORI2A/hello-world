@@ -10,3 +10,5 @@ Debug\
 *.idb
 *.pdb
 
+*.user
+*.aps

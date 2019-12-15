@@ -66,6 +66,9 @@ BEGIN_MESSAGE_MAP(CGameAssistDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &CGameAssistDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDCANCEL, &CGameAssistDlg::OnBnClickedCancel)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -157,3 +160,75 @@ HCURSOR CGameAssistDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CGameAssistDlg::OnBnClickedOk()
+{
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("进入此处，调用 OnCancel ，实现与其一样的操作！");
+
+	// TODO: 在此添加控件通知处理程序代码
+	//CDialogEx::OnOK();
+
+	// 【确定】也与【取消】一样结束程序。
+	CGameAssistDlg::OnCancel();
+}
+
+
+void CGameAssistDlg::OnBnClickedCancel()
+{
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("进入此处，调用 OnCancel ，最终安全结束程序！");
+
+	// TODO: 在此添加控件通知处理程序代码
+	CDialogEx::OnCancel();
+}
+
+//【取消】、【关闭】按钮的默认实现会联动到 OnCancel 。
+// MSDN : 
+// When you implement a modeless dialog box, always override the OnCancel member function and call DestroyWindow from within it. 
+// Don't call the base class CDialog::OnCancel, because it calls EndDialog, which will make the dialog box invisible but will not destroy it.
+// You should also override PostNcDestroy for modeless dialog boxes in order to delete this, since modeless dialog boxes are usually allocated with new. Modal dialog boxes are usually constructed on the frame and do not need PostNcDestroy cleanup. 
+void CGameAssistDlg::OnCancel()
+{
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("进入此处，准备结束程序，触发销毁窗口消息，联动后续一系列清理操作！");
+
+	// TODO: 在此添加专用代码和/或调用基类
+
+	// 当要触发销毁窗口时，就不要调用基类的 OnCancel 方法。
+	//CDialogEx::OnCancel();
+
+	// 手动调用联动实现销毁窗口
+	// MSDN:
+	// It sends WM_DESTROY and WM_NCDESTROY messages to the window. It does not destroy the CWnd object. 
+	// DestroyWindow 发出 WM_DESTROY 和 WM_NCDESTROY 消息，触发销毁窗口。但不会删除窗口C++对象。
+	DestroyWindow();
+}
+
+// 在窗口被销毁后，PostNcDestroy 被 OnNcDestroy 方法调用。 
+// 通过重载 PostNcDestroy，提供删除窗口C++对象的代码。
+void CGameAssistDlg::PostNcDestroy()
+{
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("进入此处，删除窗口C++对象！");
+
+	// TODO: 在此添加专用代码和/或调用基类
+	// 窗口销毁后，还需要删除窗口C++对象。
+	delete this;
+
+	CDialogEx::PostNcDestroy();
+}
+
+// 【确定】、【取消】、【关闭】按钮的默认实现动作都未触发 WM_DESTROY 消息。
+void CGameAssistDlg::OnDestroy()
+{
+	TOOL_AUTO_LOG_FUNCTION_INFO();
+	CTool::LOG_TO_DEFAULT_FILE_FORMAT_STR_ENDL("进入此处，说明窗口正在被销毁，销毁完成后，也通知本程序的退出。！");
+
+	CDialogEx::OnDestroy();
+
+	// TODO: 在此处添加消息处理程序代码
+	//此程序中，对话框窗口的销毁也就代表着程序的退出。
+	PostQuitMessage(0);
+}
