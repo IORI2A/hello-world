@@ -7,7 +7,8 @@
 #include "GameAssistDlg.h"
 #include "afxdialogex.h"
 
-#include "AssistSrc/include/Tool.h"
+#include "Tool.h"
+#include "WindowHelper.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -107,6 +108,7 @@ BOOL CGameAssistDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	my_find_window();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

@@ -1,4 +1,4 @@
-#include "../include/Tool.h"
+#include "Tool.h"
 
 //#include <fstream>
 #include <stdio.h>
@@ -1355,3 +1355,125 @@ void Tool::CMyMFCStudyLog::FORCE_LOG_TO_FILE_FORMAT_STR_ENDL(const char *file, c
 	LeaveCriticalSection(&m_mfcStudyLogCriticalSection);
 }
 #pragma warning(default: 4996)
+
+
+//#include "Windows.h"
+//#include "wchar.h"
+// 需要引入该库才可编译通过。
+#include "tchar.h"
+/**************** 以字符串返回，同时返回错误码 支持ASNI 和 UNICODE ***************/
+// 简化获取 Windows 函数执行后的 Last Error。 以字符串返回，同时返回错误码 支持ASNI 和 UNICODE 。
+// LPVOID lpText ，用户传递的用于接收文本内容的缓冲区。
+// DWORD nSize ，传递的缓冲区大小。
+//DWORD Tool::GetLastErrorCodeAndText(LPVOID lpText, DWORD nSize)
+//{
+//	// Retrieve the system error message for the last-error code
+//	DWORD dw = GetLastError();
+//	LPVOID lpMsgBuf;
+//	// DWORD WINAPI FormatMessage(__in DWORD dwFlags, __in LPCVOID lpSource, __in DWORD dwMessageId, __in DWORD dwLanguageId, __out LPTSTR lpBuffer, __in DWORD nSize, __in va_list* Arguments);
+//	FormatMessage( // 用于根据错误码获取相应的错误文本信息。
+//		FORMAT_MESSAGE_ALLOCATE_BUFFER |  // 函数内部分配缓冲区（大小：nSize，地址：lpBuffer）。不再使用时，调用LocalFree释放该缓冲区。
+//		FORMAT_MESSAGE_FROM_SYSTEM |  //  根据系统错误码（system-defined error，GetLastError）搜索系统消息表(system message-table），获取相应的错误文本信息。
+//		FORMAT_MESSAGE_IGNORE_INSERTS, //  Arguments参数被忽略。保持原始文本输出。
+//		NULL, // 指定消息文本来源位置（本例从系统消息表中获取system message-table）。dwFlags 未指定 FORMAT_MESSAGE_FROM_HMODULE、FORMAT_MESSAGE_FROM_STRING 中任何一个时，该参数忽略。
+//		dw, // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略
+//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略。
+//		(LPTSTR)&lpMsgBuf, // 获取文本信息（null-terminated）（<= 64K bytes）
+//		0, // 指定缓冲区的大小。如果 dwFlags 指定有 FORMAT_MESSAGE_ALLOCATE_BUFFER，则指定的是函数内部分配时的最小缓冲区大小。（缓冲区最大不超过 64K bytes）
+//		NULL // 类似与 C 中 printf 函数的最后一个参数。
+//	);
+//
+//	// 返回错误文本信息。
+//#ifdef  UNICODE 
+//	wmemset((LPTSTR)lpText, 0, nSize);
+//#else
+//	memset(lpText, 0, nSize);
+//#endif
+//
+//	//size_t len = strlen((const char *)lpMsgBuf); // ?? 取的字节长度，是否正确？当是宽字符时会出现什么情况 ？ 如何获取缓冲区的字节长度？
+//	size_t len = _tcslen((LPTSTR)lpMsgBuf);
+//	if (len >= nSize)  // 用户指定的内存放不下所有文本信息时，截掉多余文本。
+//	{
+//		len = nSize - 1;
+//	}
+//
+//#ifdef  UNICODE 
+//	wmemcpy((LPTSTR)lpText, (LPTSTR)lpMsgBuf, len);
+//#else
+//	memcpy(lpText, lpMsgBuf, len);
+//#endif	
+//
+//	LocalFree(lpMsgBuf); // 释放系统分配的缓冲区。
+//	// 同时返回错误代码
+//	return dw;
+//}
+
+DWORD Tool::GetLastErrorCodeAndText_A(char *lpText, DWORD nSize)
+{
+	// Retrieve the system error message for the last-error code
+	DWORD dw = GetLastError();
+	LPVOID lpMsgBuf;
+	// DWORD WINAPI FormatMessage(__in DWORD dwFlags, __in LPCVOID lpSource, __in DWORD dwMessageId, __in DWORD dwLanguageId, __out LPTSTR lpBuffer, __in DWORD nSize, __in va_list* Arguments);
+	FormatMessageA( // 用于根据错误码获取相应的错误文本信息。
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |  // 函数内部分配缓冲区（大小：nSize，地址：lpBuffer）。不再使用时，调用LocalFree释放该缓冲区。
+		FORMAT_MESSAGE_FROM_SYSTEM |  //  根据系统错误码（system-defined error，GetLastError）搜索系统消息表(system message-table），获取相应的错误文本信息。
+		FORMAT_MESSAGE_IGNORE_INSERTS, //  Arguments参数被忽略。保持原始文本输出。
+		NULL, // 指定消息文本来源位置（本例从系统消息表中获取system message-table）。dwFlags 未指定 FORMAT_MESSAGE_FROM_HMODULE、FORMAT_MESSAGE_FROM_STRING 中任何一个时，该参数忽略。
+		dw, // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略。
+		(LPSTR)&lpMsgBuf, // 获取文本信息（null-terminated）（<= 64K bytes）  未尾自动带有换行符？？？
+		0, // 指定缓冲区的大小。如果 dwFlags 指定有 FORMAT_MESSAGE_ALLOCATE_BUFFER，则指定的是函数内部分配时的最小缓冲区大小。（缓冲区最大不超过 64K bytes）
+		NULL // 类似与 C 中 printf 函数的最后一个参数。
+	);
+
+	// 返回错误文本信息。
+	memset(lpText, 0, nSize);
+
+	//size_t len = strlen((const char *)lpMsgBuf); // ?? 取的字节长度，是否正确？当是宽字符时会出现什么情况 ？ 如何获取缓冲区的字节长度？
+	size_t len = strlen((LPSTR)lpMsgBuf);
+	if (len >= nSize)  // 用户指定的内存放不下所有文本信息时，截掉多余文本。
+	{
+		len = nSize - 1;
+	}
+
+	memcpy(lpText, lpMsgBuf, len);
+
+	LocalFree(lpMsgBuf); // 释放系统分配的缓冲区。
+	// 同时返回错误代码
+	return dw;
+}
+
+DWORD Tool::GetLastErrorCodeAndText_W(wchar_t *lpText, DWORD nSize)
+{
+	// Retrieve the system error message for the last-error code
+	DWORD dw = GetLastError();
+	LPVOID lpMsgBuf;
+	// DWORD WINAPI FormatMessage(__in DWORD dwFlags, __in LPCVOID lpSource, __in DWORD dwMessageId, __in DWORD dwLanguageId, __out LPTSTR lpBuffer, __in DWORD nSize, __in va_list* Arguments);
+	FormatMessageW( // 用于根据错误码获取相应的错误文本信息。
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |  // 函数内部分配缓冲区（大小：nSize，地址：lpBuffer）。不再使用时，调用LocalFree释放该缓冲区。
+		FORMAT_MESSAGE_FROM_SYSTEM |  //  根据系统错误码（system-defined error，GetLastError）搜索系统消息表(system message-table），获取相应的错误文本信息。
+		FORMAT_MESSAGE_IGNORE_INSERTS, //  Arguments参数被忽略。保持原始文本输出。
+		NULL, // 指定消息文本来源位置（本例从系统消息表中获取system message-table）。dwFlags 未指定 FORMAT_MESSAGE_FROM_HMODULE、FORMAT_MESSAGE_FROM_STRING 中任何一个时，该参数忽略。
+		dw, // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // dwFlags 包括 FORMAT_MESSAGE_FROM_STRING 时，该参数忽略。
+		(LPWSTR)&lpMsgBuf, // 获取文本信息（null-terminated）（<= 64K bytes）
+		0, // 指定缓冲区的大小。如果 dwFlags 指定有 FORMAT_MESSAGE_ALLOCATE_BUFFER，则指定的是函数内部分配时的最小缓冲区大小。（缓冲区最大不超过 64K bytes）
+		NULL // 类似与 C 中 printf 函数的最后一个参数。
+	);
+
+	// 返回错误文本信息。
+	wmemset((LPWSTR)lpText, 0, nSize);
+
+	//size_t len = strlen((const char *)lpMsgBuf); // ?? 取的字节长度，是否正确？当是宽字符时会出现什么情况 ？ 如何获取缓冲区的字节长度？
+	size_t len = _tcslen((LPWSTR)lpMsgBuf);
+	if (len >= nSize)  // 用户指定的内存放不下所有文本信息时，截掉多余文本。
+	{
+		len = nSize - 1;
+	}
+
+	wmemcpy((LPWSTR)lpText, (LPWSTR)lpMsgBuf, len);
+
+	LocalFree(lpMsgBuf); // 释放系统分配的缓冲区。
+	// 同时返回错误代码
+	return dw;
+}

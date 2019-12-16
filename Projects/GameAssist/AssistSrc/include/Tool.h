@@ -310,4 +310,17 @@ namespace Tool // namespace Tool
 } // namespace Tool
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace Tool // namespace Tool
+{
+	// 简化获取 Windows 函数执行后的 Last Error。 以字符串返回，同时返回错误码 支持ASNI 和 UNICODE 。
+	// LPVOID lpText ，用户传递的用于接收文本内容的缓冲区。  返回结果未尾自动带有换行符？？？
+	// DWORD nSize ，传递的缓冲区大小。
+	//DWORD GetLastErrorCodeAndText(LPVOID lpText, DWORD nSize);
+	DWORD GetLastErrorCodeAndText_A(char *lpText, DWORD nSize);
+	DWORD GetLastErrorCodeAndText_W(wchar_t *lpText, DWORD nSize);
+} // namespace Tool
+
+
+
 #endif /*__TOOL_H__*/

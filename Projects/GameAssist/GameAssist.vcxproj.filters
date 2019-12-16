@@ -36,6 +36,9 @@
     <ClInclude Include="AssistSrc\include\Tool.h">
       <Filter>AssistSrc</Filter>
     </ClInclude>
+    <ClInclude Include="AssistSrc\include\WindowHelper.h">
+      <Filter>AssistSrc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameAssist.cpp">
@@ -48,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AssistSrc\src\Tool.cpp">
+      <Filter>AssistSrc</Filter>
+    </ClCompile>
+    <ClCompile Include="AssistSrc\src\WindowHelper.cpp">
       <Filter>AssistSrc</Filter>
     </ClCompile>
   </ItemGroup>

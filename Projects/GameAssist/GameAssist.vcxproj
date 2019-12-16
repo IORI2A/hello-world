@@ -93,6 +93,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\lz\Documents\GitHub\hello-world\Projects\GameAssist\AssistSrc\include;C:\Users\lz\Documents\GitHub\hello-world\Projects\GameAssist</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,6 +140,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\lz\Documents\GitHub\hello-world\Projects\GameAssist\AssistSrc\include;C:\Users\lz\Documents\GitHub\hello-world\Projects\GameAssist</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -184,6 +186,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AssistSrc\include\Tool.h" />
+    <ClInclude Include="AssistSrc\include\WindowHelper.h" />
     <ClInclude Include="GameAssist.h" />
     <ClInclude Include="GameAssistDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -195,6 +198,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AssistSrc\src\WindowHelper.cpp" />
     <ClCompile Include="GameAssist.cpp" />
     <ClCompile Include="GameAssistDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
