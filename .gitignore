@@ -40,3 +40,4 @@ Release/*
 
 *.opensdf
 *.sdf
+*.suo
