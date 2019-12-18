@@ -1,31 +1,29 @@
-﻿
-// GameAssistDlg.h: 头文件
+
+// GameAssistDlg.h : header file
 //
 
 #pragma once
 
 
-// CGameAssistDlg 对话框
-class CGameAssistDlg : public CDialogEx
+// CGameAssistDlg dialog
+class CGameAssistDlg : public CDialog
 {
-// 构造
+// Construction
 public:
-	CGameAssistDlg(CWnd* pParent = nullptr);	// 标准构造函数
+	CGameAssistDlg(CWnd* pParent = NULL);	// standard constructor
 
-// 对话框数据
-#ifdef AFX_DESIGN_TIME
+// Dialog Data
 	enum { IDD = IDD_GAMEASSIST_DIALOG };
-#endif
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
 
-// 实现
+// Implementation
 protected:
 	HICON m_hIcon;
 
-	// 生成的消息映射函数
+	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();

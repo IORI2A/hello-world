@@ -63,7 +63,7 @@ rem FOR /R . %%d in (.) do rd /q "%%d\Properties" 2> nul
 FOR /R . %%d IN (.) DO rd /s /q "%%d\Debug"
 FOR /R . %%d IN (.) DO rd /s /q "%%d\Release" 
 FOR /R . %%d IN (.) DO rd /s /q "%%d\ipch" 
-FOR /R . %%d IN (.) DO rd /s /q "%%d\.svn" 
+REM FOR /R . %%d IN (.) DO rd /s /q "%%d\.svn" 
 FOR /R . %%d IN (.) DO rd /s /q "%%d\_UpgradeReport_Files" 
 
 DEL /S /A /Q *.suo
@@ -80,7 +80,9 @@ DEL /S /A /Q *.clw
 DEL /S /A /Q *.opt
 DEL /S /A /Q *.plg
 DEL /S /A /Q *.dsw
-DEL /S /A /Q *.sln
+REM DEL /S /A /Q *.sln
+DEL /S /A /Q *.ncb
+DEL /S /A /Q *.log
 
 DEL /S /Q UpgradeLog*.XML
 

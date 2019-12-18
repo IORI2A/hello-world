@@ -1,4 +1,4 @@
-#include "Tool.h"
+#include "lz_tool.h"
 
 //#include <fstream>
 #include <stdio.h>

@@ -5,40 +5,20 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="源文件\AssistSrc">
+      <UniqueIdentifier>{03e1d2d2-9693-4d90-a862-5dd45d1fc995}</UniqueIdentifier>
+    </Filter>
     <Filter Include="头文件">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="头文件\AssistSrc">
+      <UniqueIdentifier>{303a22eb-226a-418e-bae9-9ecef823a3f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="资源文件">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="AssistSrc">
-      <UniqueIdentifier>{c26c2045-560a-4414-878f-7fafead101b7}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GameAssist.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GameAssistDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="AssistSrc\include\Tool.h">
-      <Filter>AssistSrc</Filter>
-    </ClInclude>
-    <ClInclude Include="AssistSrc\include\WindowHelper.h">
-      <Filter>AssistSrc</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameAssist.cpp">
@@ -50,26 +30,48 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AssistSrc\src\Tool.cpp">
-      <Filter>AssistSrc</Filter>
+    <ClCompile Include="AssistSrc\src\lz_tool.cpp">
+      <Filter>源文件\AssistSrc</Filter>
     </ClCompile>
-    <ClCompile Include="AssistSrc\src\WindowHelper.cpp">
-      <Filter>AssistSrc</Filter>
+    <ClCompile Include="AssistSrc\src\lz_window_helper.cpp">
+      <Filter>源文件\AssistSrc</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameAssist.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameAssistDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AssistSrc\include\lz_tool.h">
+      <Filter>头文件\AssistSrc</Filter>
+    </ClInclude>
+    <ClInclude Include="AssistSrc\include\lz_window_helper.h">
+      <Filter>头文件\AssistSrc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\GameAssist.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="res\GameAssist.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameAssist.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\GameAssist.rc2">
-      <Filter>资源文件</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\GameAssist.ico">
-      <Filter>资源文件</Filter>
-    </Image>
   </ItemGroup>
 </Project>
